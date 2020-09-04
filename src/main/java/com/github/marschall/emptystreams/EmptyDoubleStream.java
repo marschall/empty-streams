@@ -1,6 +1,7 @@
 package com.github.marschall.emptystreams;
 
 import java.util.DoubleSummaryStatistics;
+import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.PrimitiveIterator.OfDouble;
 import java.util.function.BiConsumer;
@@ -126,18 +127,22 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
 
   @Override
   public double[] toArray() {
+    this.closeAndCheck();
     return EMPTY;
   }
 
   @Override
   public double reduce(double identity, DoubleBinaryOperator op) {
+    Objects.requireNonNull(op);
+    this.closeAndCheck();
     return identity;
   }
 
   @Override
   public OptionalDouble reduce(DoubleBinaryOperator op) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(op);
+    this.closeAndCheck();
+    return OptionalDouble.empty();
   }
 
   @Override

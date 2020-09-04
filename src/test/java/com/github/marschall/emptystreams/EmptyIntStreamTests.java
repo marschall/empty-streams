@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -163,25 +165,33 @@ class EmptyIntStreamTests {
   @ParameterizedTest
   @MethodSource("emptyStreams")
   void collect(IntStream stream) {
+    assertEquals(Collections.emptyList(), stream.collect(() -> new ArrayList<>(), (list, i) -> list.add(i), (a, b) -> a.addAll(b)));
 
+    assertThrows(IllegalStateException.class, () -> stream.collect(() -> new ArrayList<>(), (list, i) -> list.add(i), (a, b) -> a.addAll(b)));
   }
 
   @ParameterizedTest
   @MethodSource("emptyStreams")
   void mapToObj(IntStream stream) {
+    assertArrayEquals(new Integer[0], stream.mapToObj(Integer::valueOf).toArray(Integer[]::new));
 
+    assertThrows(IllegalStateException.class, () -> stream.mapToObj(Integer::valueOf));
   }
 
   @ParameterizedTest
   @MethodSource("emptyStreams")
   void mapToLong(IntStream stream) {
+    assertArrayEquals(new long[0], stream.mapToLong(i -> i).toArray());
 
+    assertThrows(IllegalStateException.class, () -> stream.mapToLong(i -> i));
   }
 
   @ParameterizedTest
   @MethodSource("emptyStreams")
   void mapToDouble(IntStream stream) {
+    assertArrayEquals(new double[0], stream.mapToDouble(i -> i).toArray());
 
+    assertThrows(IllegalStateException.class, () -> stream.mapToDouble(i -> i));
   }
 
   static Stream<IntStream> emptyStreams() {

@@ -1,6 +1,7 @@
 package com.github.marschall.emptystreams;
 
 import java.util.LongSummaryStatistics;
+import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.PrimitiveIterator.OfLong;
@@ -20,6 +21,8 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements LongStream {
+
+  private static final long[] EMPTY = new long[0];
 
   EmptyLongStream() {
     super();
@@ -125,19 +128,22 @@ final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements
 
   @Override
   public long[] toArray() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closeAndCheck();
+    return EMPTY;
   }
 
   @Override
   public long reduce(long identity, LongBinaryOperator op) {
+    Objects.requireNonNull(op);
+    this.closeAndCheck();
     return identity;
   }
 
   @Override
   public OptionalLong reduce(LongBinaryOperator op) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(op);
+    this.closeAndCheck();
+    return OptionalLong.empty();
   }
 
   @Override
