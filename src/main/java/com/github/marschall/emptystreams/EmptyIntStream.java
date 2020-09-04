@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-final class EmptyIntStream implements IntStream {
+final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implements IntStream {
 
   private static final EmptySpliterator EMPTY_SPLITERATOR = new EmptySpliterator();
   private static final EmptyIterator EMPTY_ITERATOR = new EmptyIterator();
@@ -31,10 +31,12 @@ final class EmptyIntStream implements IntStream {
     super();
   }
 
-  @Override
-  public boolean isParallel() {
-    // TODO Auto-generated method stub
-    return false;
+  EmptyIntStream(boolean ordered, boolean parallel, Runnable closeHandler) {
+    super(ordered, parallel, closeHandler);
+  }
+
+  EmptyIntStream(boolean ordered, boolean parallel) {
+    super(ordered, parallel);
   }
 
   @Override
@@ -45,47 +47,49 @@ final class EmptyIntStream implements IntStream {
 
   @Override
   public IntStream onClose(Runnable closeHandler) {
+    Objects.requireNonNull(closeHandler);
     // TODO Auto-generated method stub
     return null;
-  }
-
-  @Override
-  public void close() {
-    // TODO Auto-generated method stub
   }
 
   @Override
   public IntStream filter(IntPredicate predicate) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(predicate);
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public IntStream map(IntUnaryOperator mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public <U> Stream<U> mapToObj(IntFunction<? extends U> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return new EmptyStream<>(this.ordered, this.parallel, this::close);
   }
 
   @Override
   public LongStream mapToLong(IntToLongFunction mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return new EmptyLongStream(this.ordered, this.parallel, this::close);
   }
 
   @Override
   public DoubleStream mapToDouble(IntToDoubleFunction mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return new EmptyDoubleStream(this.ordered, this.parallel, this::close);
   }
 
   @Override
   public IntStream flatMap(IntFunction<? extends IntStream> mapper) {
+    Objects.requireNonNull(mapper);
     // TODO Auto-generated method stub
     return null;
   }
@@ -104,6 +108,7 @@ final class EmptyIntStream implements IntStream {
 
   @Override
   public IntStream peek(IntConsumer action) {
+    Objects.requireNonNull(action);
     // TODO Auto-generated method stub
     return null;
   }
@@ -124,6 +129,7 @@ final class EmptyIntStream implements IntStream {
   public void forEach(IntConsumer action) {
     Objects.requireNonNull(action);
     // ignore because empty
+    this.closeAndCheck();
 
   }
 
@@ -131,52 +137,65 @@ final class EmptyIntStream implements IntStream {
   public void forEachOrdered(IntConsumer action) {
     Objects.requireNonNull(action);
     // ignore because empty
+    this.closeAndCheck();
   }
 
   @Override
   public int[] toArray() {
+    this.closeAndCheck();
     return EMPTY;
   }
 
   @Override
   public int reduce(int identity, IntBinaryOperator op) {
+    Objects.requireNonNull(op);
+    this.closeAndCheck();
     return identity;
   }
 
   @Override
   public OptionalInt reduce(IntBinaryOperator op) {
+    Objects.requireNonNull(op);
+    this.closeAndCheck();
     return OptionalInt.empty();
   }
 
   @Override
-  public <R> R collect(Supplier<R> supplier, ObjIntConsumer<R> accumulator,
-          BiConsumer<R, R> combiner) {
-    // TODO Auto-generated method stub
-    return null;
+  public <R> R collect(Supplier<R> supplier, ObjIntConsumer<R> accumulator, BiConsumer<R, R> combiner) {
+    Objects.requireNonNull(supplier);
+    Objects.requireNonNull(accumulator);
+    Objects.requireNonNull(combiner);
+    this.closeAndCheck();
+    return supplier.get();
   }
 
   @Override
   public int sum() {
+    this.closeAndCheck();
     return 0;
   }
 
   @Override
   public OptionalInt min() {
+    this.closeAndCheck();
     return OptionalInt.empty();
   }
 
   @Override
   public OptionalInt max() {
+    this.closeAndCheck();
     return OptionalInt.empty();
   }
 
   @Override
   public long count() {
+    this.closeAndCheck();
     return 0L;
   }
 
   @Override
   public OptionalDouble average() {
+    this.closeAndCheck();
     return OptionalDouble.empty();
   }
 
@@ -188,26 +207,34 @@ final class EmptyIntStream implements IntStream {
 
   @Override
   public boolean anyMatch(IntPredicate predicate) {
+    Objects.requireNonNull(predicate);
+    this.closeAndCheck();
     return false;
   }
 
   @Override
   public boolean allMatch(IntPredicate predicate) {
+    Objects.requireNonNull(predicate);
+    this.closeAndCheck();
     return true;
   }
 
   @Override
   public boolean noneMatch(IntPredicate predicate) {
+    Objects.requireNonNull(predicate);
+    this.closeAndCheck();
     return true;
   }
 
   @Override
   public OptionalInt findFirst() {
+    this.closeAndCheck();
     return OptionalInt.empty();
   }
 
   @Override
   public OptionalInt findAny() {
+    this.closeAndCheck();
     return OptionalInt.empty();
   }
 
@@ -225,8 +252,8 @@ final class EmptyIntStream implements IntStream {
 
   @Override
   public Stream<Integer> boxed() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    return new EmptyStream<>(this.ordered, this.parallel, this::close);
   }
 
   @Override

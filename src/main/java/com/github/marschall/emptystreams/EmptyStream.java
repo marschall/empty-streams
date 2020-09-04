@@ -3,6 +3,7 @@ package com.github.marschall.emptystreams;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.BiConsumer;
@@ -22,7 +23,21 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-final class EmtpyStream<T> implements Stream<T> {
+final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stream<T> {
+
+  private static final Object[] EMTPY = new Object[0];
+
+  EmptyStream() {
+    super();
+  }
+
+  EmptyStream(boolean ordered, boolean parallel, Runnable closeHandler) {
+    super(ordered, parallel, closeHandler);
+  }
+
+  EmptyStream(boolean ordered, boolean parallel) {
+    super(ordered, parallel);
+  }
 
   @Override
   public Iterator<T> iterator() {
@@ -33,12 +48,6 @@ final class EmtpyStream<T> implements Stream<T> {
   public Spliterator<T> spliterator() {
     // TODO Auto-generated method stub
     return null;
-  }
-
-  @Override
-  public boolean isParallel() {
-    // TODO Auto-generated method stub
-    return false;
   }
 
   @Override
@@ -66,12 +75,6 @@ final class EmtpyStream<T> implements Stream<T> {
   }
 
   @Override
-  public void close() {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
   public Stream<T> filter(Predicate<? super T> predicate) {
     // TODO Auto-generated method stub
     return null;
@@ -79,26 +82,30 @@ final class EmtpyStream<T> implements Stream<T> {
 
   @Override
   public <R> Stream<R> map(Function<? super T, ? extends R> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return (Stream<R>) this;
   }
 
   @Override
   public IntStream mapToInt(ToIntFunction<? super T> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return new EmptyIntStream(this.ordered, this.parallel, this::close);
   }
 
   @Override
   public LongStream mapToLong(ToLongFunction<? super T> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return new EmptyLongStream(this.ordered, this.parallel, this::close);
   }
 
   @Override
   public DoubleStream mapToDouble(ToDoubleFunction<? super T> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return new EmptyDoubleStream(this.ordered, this.parallel, this::close);
   }
 
   @Override
@@ -167,26 +174,29 @@ final class EmtpyStream<T> implements Stream<T> {
 
   @Override
   public void forEach(Consumer<? super T> action) {
+    Objects.requireNonNull(action);
     // TODO Auto-generated method stub
 
   }
 
   @Override
   public void forEachOrdered(Consumer<? super T> action) {
+    Objects.requireNonNull(action);
     // TODO Auto-generated method stub
 
   }
 
   @Override
   public Object[] toArray() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closeAndCheck();
+    return EMTPY;
   }
 
   @Override
   public <A> A[] toArray(IntFunction<A[]> generator) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(generator);
+    this.closeAndCheck();
+    return generator.apply(0);
   }
 
   @Override

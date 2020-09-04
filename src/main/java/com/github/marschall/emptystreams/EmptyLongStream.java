@@ -19,12 +19,18 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-final class EmptyLongStream implements LongStream {
+final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements LongStream {
 
-  @Override
-  public boolean isParallel() {
-    // TODO Auto-generated method stub
-    return false;
+  EmptyLongStream() {
+    super();
+  }
+
+  EmptyLongStream(boolean ordered, boolean parallel, Runnable closeHandler) {
+    super(ordered, parallel, closeHandler);
+  }
+
+  EmptyLongStream(boolean ordered, boolean parallel) {
+    super(ordered, parallel);
   }
 
   @Override
@@ -37,12 +43,6 @@ final class EmptyLongStream implements LongStream {
   public LongStream onClose(Runnable closeHandler) {
     // TODO Auto-generated method stub
     return null;
-  }
-
-  @Override
-  public void close() {
-    // TODO Auto-generated method stub
-
   }
 
   @Override

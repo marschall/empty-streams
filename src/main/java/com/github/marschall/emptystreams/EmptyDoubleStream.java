@@ -18,14 +18,20 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-final class EmptyDoubleStream implements DoubleStream {
+final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> implements DoubleStream {
 
   private static final double[] EMPTY = new double[0];
 
-  @Override
-  public boolean isParallel() {
-    // TODO Auto-generated method stub
-    return false;
+  EmptyDoubleStream() {
+    super();
+  }
+
+  EmptyDoubleStream(boolean ordered, boolean parallel, Runnable closeHandler) {
+    super(ordered, parallel, closeHandler);
+  }
+
+  EmptyDoubleStream(boolean ordered, boolean parallel) {
+    super(ordered, parallel);
   }
 
   @Override
@@ -38,12 +44,6 @@ final class EmptyDoubleStream implements DoubleStream {
   public DoubleStream onClose(Runnable closeHandler) {
     // TODO Auto-generated method stub
     return null;
-  }
-
-  @Override
-  public void close() {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
