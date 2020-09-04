@@ -20,6 +20,8 @@ import java.util.stream.Stream;
 
 final class EmptyDoubleStream implements DoubleStream {
 
+  private static final double[] EMPTY = new double[0];
+
   @Override
   public boolean isParallel() {
     // TODO Auto-generated method stub
@@ -124,14 +126,12 @@ final class EmptyDoubleStream implements DoubleStream {
 
   @Override
   public double[] toArray() {
-    // TODO Auto-generated method stub
-    return null;
+    return EMPTY;
   }
 
   @Override
   public double reduce(double identity, DoubleBinaryOperator op) {
-    // TODO Auto-generated method stub
-    return 0;
+    return identity;
   }
 
   @Override
@@ -149,32 +149,27 @@ final class EmptyDoubleStream implements DoubleStream {
 
   @Override
   public double sum() {
-    // TODO Auto-generated method stub
-    return 0;
+    return 0.0d;
   }
 
   @Override
   public OptionalDouble min() {
-    // TODO Auto-generated method stub
-    return null;
+    return OptionalDouble.empty();
   }
 
   @Override
   public OptionalDouble max() {
-    // TODO Auto-generated method stub
-    return null;
+    return OptionalDouble.empty();
   }
 
   @Override
   public long count() {
-    // TODO Auto-generated method stub
-    return 0;
+    return 0L;
   }
 
   @Override
   public OptionalDouble average() {
-    // TODO Auto-generated method stub
-    return null;
+    return OptionalDouble.empty();
   }
 
   @Override
@@ -203,14 +198,12 @@ final class EmptyDoubleStream implements DoubleStream {
 
   @Override
   public OptionalDouble findFirst() {
-    // TODO Auto-generated method stub
-    return null;
+    return OptionalDouble.empty();
   }
 
   @Override
   public OptionalDouble findAny() {
-    // TODO Auto-generated method stub
-    return null;
+    return OptionalDouble.empty();
   }
 
   @Override
@@ -241,6 +234,11 @@ final class EmptyDoubleStream implements DoubleStream {
   public java.util.Spliterator.OfDouble spliterator() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public String toString() {
+    return "double[0]";
   }
 
 }

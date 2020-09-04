@@ -7,7 +7,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.PrimitiveIterator.OfInt;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
@@ -53,7 +52,6 @@ final class EmptyIntStream implements IntStream {
   @Override
   public void close() {
     // TODO Auto-generated method stub
-
   }
 
   @Override
@@ -124,12 +122,14 @@ final class EmptyIntStream implements IntStream {
 
   @Override
   public void forEach(IntConsumer action) {
+    Objects.requireNonNull(action);
     // ignore because empty
 
   }
 
   @Override
   public void forEachOrdered(IntConsumer action) {
+    Objects.requireNonNull(action);
     // ignore because empty
   }
 
@@ -251,82 +251,26 @@ final class EmptyIntStream implements IntStream {
     return EMPTY_SPLITERATOR;
   }
 
-  static final class EmptyIterator implements OfInt {
+  @Override
+  public String toString() {
+    return "int[0]";
+  }
 
-    @Override
-    public boolean hasNext() {
-      return false;
-    }
+  static final class EmptyIterator extends EmptyPrimitiveIterator<Integer, IntConsumer> implements OfInt {
 
     @Override
     public int nextInt() {
       throw new NoSuchElementException();
     }
 
-    @Override
-    public Integer next() {
-      throw new NoSuchElementException();
-    }
-
-    @Override
-    public void forEachRemaining(IntConsumer action) {
-      // ignore because empty
-      Objects.requireNonNull(action);
-    }
-
-    @Override
-    public void forEachRemaining(Consumer<? super Integer> action) {
-      // ignore because empty
-      Objects.requireNonNull(action);
-    }
-
   }
 
-  static final class EmptySpliterator implements java.util.Spliterator.OfInt {
-
-    @Override
-    public long estimateSize() {
-      return 0L;
-    }
+  static final class EmptySpliterator extends EmptyOfPrimitive<Integer, IntConsumer, java.util.Spliterator.OfInt> implements java.util.Spliterator.OfInt {
 
     @Override
     public int characteristics() {
       return SIZED | NONNULL | IMMUTABLE;
     }
-
-    @Override
-    public OfInt trySplit() {
-      return null;
-    }
-
-    @Override
-    public boolean tryAdvance(IntConsumer action) {
-      return false;
-    }
-
-    @Override
-    public boolean tryAdvance(Consumer<? super Integer> action) {
-      return false;
-    }
-
-    @Override
-    public long getExactSizeIfKnown() {
-      return 0L;
-    }
-
-    @Override
-    public void forEachRemaining(IntConsumer action) {
-      // ignore because empty
-      Objects.requireNonNull(action);
-    }
-
-    @Override
-    public void forEachRemaining(Consumer<? super Integer> action) {
-      // ignore because empty
-      Objects.requireNonNull(action);
-    }
-
-
 
   }
 

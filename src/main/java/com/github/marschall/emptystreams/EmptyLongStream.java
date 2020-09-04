@@ -249,4 +249,9 @@ final class EmptyLongStream implements LongStream {
     return null;
   }
 
+  @Override
+  public String toString() {
+    return "long[0]";
+  }
+
 }

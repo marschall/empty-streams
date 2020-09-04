@@ -235,8 +235,7 @@ final class EmtpyStream<T> implements Stream<T> {
 
   @Override
   public long count() {
-    // TODO Auto-generated method stub
-    return 0;
+    return 0L;
   }
 
   @Override
@@ -267,6 +266,11 @@ final class EmtpyStream<T> implements Stream<T> {
   public Optional<T> findAny() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public String toString() {
+    return "Object[0]";
   }
 
 }
