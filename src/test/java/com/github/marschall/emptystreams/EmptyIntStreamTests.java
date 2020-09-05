@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IntSummaryStatistics;
 import java.util.Spliterator;
 import java.util.Spliterator.OfInt;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -310,6 +311,26 @@ class EmptyIntStreamTests {
     AtomicBoolean flag3 = new AtomicBoolean(false);
     stream.onClose(() -> flag3.set(true));
     assertFalse(flag3.get());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void flatMap(IntStream stream) {
+    assertArrayEquals(new int[0], stream.flatMap(i -> IntStream.of(i)).toArray());
+
+    assertThrows(IllegalStateException.class, () -> stream.flatMap(i -> IntStream.of(i)));
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void summaryStatistics(IntStream stream) {
+    IntSummaryStatistics summaryStatistics = stream.summaryStatistics();
+    assertEquals(0.0d, summaryStatistics.getAverage(), 0.00000001d);
+    assertEquals(0L, summaryStatistics.getCount());
+    assertEquals(Integer.MAX_VALUE, summaryStatistics.getMin());
+    assertEquals(Integer.MIN_VALUE, summaryStatistics.getMax());
+
+    assertThrows(IllegalStateException.class, () -> stream.summaryStatistics());
   }
 
   static Stream<IntStream> emptyStreams() {

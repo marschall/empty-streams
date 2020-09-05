@@ -93,8 +93,9 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   @Override
   public IntStream flatMap(IntFunction<? extends IntStream> mapper) {
     Objects.requireNonNull(mapper);
-    // TODO Auto-generated method stub
-    return null;
+    // ignore because empty
+    this.closedCheck();
+    return this;
   }
 
   @Override
@@ -212,8 +213,8 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
 
   @Override
   public IntSummaryStatistics summaryStatistics() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closeAndCheck();
+    return new IntSummaryStatistics();
   }
 
   @Override
