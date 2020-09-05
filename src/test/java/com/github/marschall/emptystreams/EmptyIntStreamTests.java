@@ -3,11 +3,16 @@ package com.github.marschall.emptystreams;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Spliterator;
+import java.util.Spliterator.OfInt;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -15,6 +20,26 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class EmptyIntStreamTests {
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void forEach(IntStream stream) {
+    AtomicInteger accumulator = new AtomicInteger();
+    stream.forEach(i -> accumulator.incrementAndGet());
+    assertEquals(0L, accumulator.get());
+
+    assertThrows(IllegalStateException.class, () -> stream.forEach(i -> accumulator.incrementAndGet()));
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void forEachOrdered(IntStream stream) {
+    AtomicInteger accumulator = new AtomicInteger();
+    stream.forEachOrdered(i -> accumulator.incrementAndGet());
+    assertEquals(0L, accumulator.get());
+
+    assertThrows(IllegalStateException.class, () -> stream.forEachOrdered(i -> accumulator.incrementAndGet()));
+  }
 
   @ParameterizedTest
   @MethodSource("emptyStreams")
@@ -71,7 +96,21 @@ class EmptyIntStreamTests {
   @ParameterizedTest
   @MethodSource("emptyStreams")
   void skip(IntStream stream) {
-    assertArrayEquals(new int[0], stream.skip(1L).toArray());
+    assertArrayEquals(new int[0], stream.skip(1L).skip(2L).toArray());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void limit(IntStream stream) {
+    assertArrayEquals(new int[0], stream.limit(1L).limit(2L).toArray());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void peek(IntStream stream) {
+    AtomicInteger accumulator = new AtomicInteger();
+    assertArrayEquals(new int[0], stream.peek(i -> accumulator.incrementAndGet()).peek(i -> accumulator.incrementAndGet()).toArray());
+    assertEquals(0, accumulator.get());
   }
 
   @ParameterizedTest
@@ -188,10 +227,89 @@ class EmptyIntStreamTests {
 
   @ParameterizedTest
   @MethodSource("emptyStreams")
+  void asLongStream(IntStream stream) {
+    assertArrayEquals(new long[0], stream.asLongStream().toArray());
+
+    assertThrows(IllegalStateException.class, () -> stream.asLongStream());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
   void mapToDouble(IntStream stream) {
     assertArrayEquals(new double[0], stream.mapToDouble(i -> i).toArray());
 
     assertThrows(IllegalStateException.class, () -> stream.mapToDouble(i -> i));
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void asDoubleStream(IntStream stream) {
+    assertArrayEquals(new double[0], stream.asDoubleStream().toArray());
+
+    assertThrows(IllegalStateException.class, () -> stream.asDoubleStream());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void distinct(IntStream stream) {
+    assertNotNull(stream.distinct());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void sorted(IntStream stream) {
+    IntStream sorted = stream.sorted();
+    OfInt spliterator = sorted.spliterator();
+    assertTrue(spliterator.hasCharacteristics(Spliterator.SORTED));
+    assertTrue(spliterator.hasCharacteristics(Spliterator.ORDERED));
+    sorted.close();
+
+    assertThrows(IllegalStateException.class, () -> stream.sorted());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void unordered(IntStream stream) {
+    IntStream unordered = stream.unordered();
+    assertFalse(unordered.spliterator().hasCharacteristics(Spliterator.ORDERED));
+    unordered.close();
+
+//    assertThrows(IllegalStateException.class, () -> stream.unordered());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void parallel(IntStream stream) {
+    assertFalse(stream.isParallel());
+    assertTrue(stream.parallel().isParallel());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void sequential(IntStream stream) {
+    assertFalse(stream.isParallel());
+    assertFalse(stream.parallel().sequential().isParallel());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void onClose(IntStream stream) {
+    AtomicBoolean flag1 = new AtomicBoolean(false);
+    AtomicBoolean flag2 = new AtomicBoolean(false);
+
+    IntStream toClose = stream.onClose(() -> flag1.set(true)).onClose(() -> flag2.set(true));
+
+    assertFalse(flag1.get());
+    assertFalse(flag2.get());
+
+    toClose.close();
+
+    assertTrue(flag1.get());
+    assertTrue(flag2.get());
+
+    AtomicBoolean flag3 = new AtomicBoolean(false);
+    stream.onClose(() -> flag3.set(true));
+    assertFalse(flag3.get());
   }
 
   static Stream<IntStream> emptyStreams() {

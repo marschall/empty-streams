@@ -31,6 +31,14 @@ abstract class EmptyBaseStream<T, S extends BaseStream<T, S>> implements BaseStr
     return this.parallel;
   }
 
+  Runnable composeCloseHandler(Runnable r) {
+    if (this.closeHandler == null) {
+      return compose(r, this::close);
+    } else {
+      return compose(this.closeHandler, r);
+    }
+  }
+
   static Runnable compose(Runnable first, Runnable second) {
     return () -> {
       try {

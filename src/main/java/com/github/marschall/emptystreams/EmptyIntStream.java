@@ -41,15 +41,18 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
 
   @Override
   public IntStream unordered() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    if (this.ordered) {
+      return new EmptyIntStream(false, this.parallel, this::close);
+    } else {
+      return this;
+    }
   }
 
   @Override
   public IntStream onClose(Runnable closeHandler) {
     Objects.requireNonNull(closeHandler);
-    // TODO Auto-generated method stub
-    return null;
+    return new EmptyIntStream(this.ordered, this.parallel, this.composeCloseHandler(closeHandler));
   }
 
   @Override
@@ -96,33 +99,41 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
 
   @Override
   public IntStream distinct() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public IntStream sorted() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    // FIXME
+    return this;
   }
 
   @Override
   public IntStream peek(IntConsumer action) {
     Objects.requireNonNull(action);
-    // TODO Auto-generated method stub
-    return null;
+    // ignore because empty
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public IntStream limit(long maxSize) {
-    // TODO Auto-generated method stub
-    return null;
+    if (maxSize < 0) {
+      throw new IllegalArgumentException();
+    }
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public IntStream skip(long n) {
-    // TODO Auto-generated method stub
-    return null;
+    if (n < 0) {
+      throw new IllegalArgumentException();
+    }
+    this.closedCheck();
+    return this;
   }
 
   @Override
@@ -240,14 +251,14 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
 
   @Override
   public LongStream asLongStream() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    return new EmptyLongStream(this.ordered, this.parallel, this::close);
   }
 
   @Override
   public DoubleStream asDoubleStream() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    return new EmptyDoubleStream(this.ordered, this.parallel, this::close);
   }
 
   @Override
@@ -258,14 +269,22 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
 
   @Override
   public IntStream sequential() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    if (this.parallel) {
+      return new EmptyIntStream(this.ordered, false, this::close);
+    } else {
+      return this;
+    }
   }
 
   @Override
   public IntStream parallel() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    if (this.parallel) {
+      return this;
+    } else {
+      return new EmptyIntStream(this.ordered, true, this::close);
+    }
   }
 
   @Override
@@ -296,7 +315,7 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
 
     @Override
     public int characteristics() {
-      return SIZED | NONNULL | IMMUTABLE;
+      return SIZED | NONNULL | IMMUTABLE | ORDERED | SORTED | SUBSIZED;
     }
 
   }
