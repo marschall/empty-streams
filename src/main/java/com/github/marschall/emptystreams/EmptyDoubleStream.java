@@ -1,9 +1,17 @@
 package com.github.marschall.emptystreams;
 
+import static java.util.Spliterator.IMMUTABLE;
+import static java.util.Spliterator.NONNULL;
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterator.SIZED;
+import static java.util.Spliterator.SUBSIZED;
+
 import java.util.DoubleSummaryStatistics;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.PrimitiveIterator.OfDouble;
+import java.util.Spliterator;
 import java.util.function.BiConsumer;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleConsumer;
@@ -21,6 +29,11 @@ import java.util.stream.Stream;
 
 final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> implements DoubleStream {
 
+  private static final Spliterator.OfDouble EMPTY_SPLITERATOR_ORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | ORDERED | SUBSIZED);
+  private static final Spliterator.OfDouble EMPTY_SPLITERATOR_UNORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
+  private static final Spliterator.OfDouble EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliterator();
+  private static final EmptyIterator EMPTY_ITERATOR = new EmptyIterator();
+
   private static final double[] EMPTY = new double[0];
 
   EmptyDoubleStream() {
@@ -37,92 +50,118 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
 
   @Override
   public DoubleStream unordered() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    if (this.ordered) {
+      return new EmptyDoubleStream(false, this.parallel, this.sorted, this::close);
+    } else {
+      return this;
+    }
   }
 
   @Override
   public DoubleStream onClose(Runnable closeHandler) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(closeHandler);
+    this.closedCheck();
+    return new EmptyDoubleStream(this.ordered, this.parallel, this.sorted, this.composeCloseHandler(closeHandler));
   }
 
   @Override
   public DoubleStream filter(DoublePredicate predicate) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(predicate);
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public DoubleStream map(DoubleUnaryOperator mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public <U> Stream<U> mapToObj(DoubleFunction<? extends U> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public IntStream mapToInt(DoubleToIntFunction mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return new EmptyIntStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public LongStream mapToLong(DoubleToLongFunction mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    this.closedCheck();
+    return new EmptyLongStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public DoubleStream flatMap(DoubleFunction<? extends DoubleStream> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(mapper);
+    // ignore because empty
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public DoubleStream distinct() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public DoubleStream sorted() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    if (this.sorted) {
+      return this;
+    } else {
+      return new EmptyDoubleStream(this.ordered, this.parallel, true, this::close);
+    }
   }
 
   @Override
   public DoubleStream peek(DoubleConsumer action) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(action);
+    // ignore because empty
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public DoubleStream limit(long maxSize) {
-    // TODO Auto-generated method stub
-    return null;
+    if (maxSize < 0) {
+      throw new IllegalArgumentException();
+    }
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public DoubleStream skip(long n) {
-    // TODO Auto-generated method stub
-    return null;
+    if (n < 0) {
+      throw new IllegalArgumentException();
+    }
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public void forEach(DoubleConsumer action) {
-    // TODO Auto-generated method stub
-
+    Objects.requireNonNull(action);
+    // ignore because empty
+    this.closeAndCheck();
   }
 
   @Override
   public void forEachOrdered(DoubleConsumer action) {
-    // TODO Auto-generated method stub
-
+    Objects.requireNonNull(action);
+    // ignore because empty
+    this.closeAndCheck();
   }
 
   @Override
@@ -146,104 +185,156 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
   }
 
   @Override
-  public <R> R collect(Supplier<R> supplier, ObjDoubleConsumer<R> accumulator,
-          BiConsumer<R, R> combiner) {
-    // TODO Auto-generated method stub
-    return null;
+  public <R> R collect(Supplier<R> supplier, ObjDoubleConsumer<R> accumulator, BiConsumer<R, R> combiner) {
+    Objects.requireNonNull(supplier);
+    Objects.requireNonNull(accumulator);
+    Objects.requireNonNull(combiner);
+    this.closeAndCheck();
+    return supplier.get();
   }
 
   @Override
   public double sum() {
+    this.closeAndCheck();
     return 0.0d;
   }
 
   @Override
   public OptionalDouble min() {
+    this.closeAndCheck();
     return OptionalDouble.empty();
   }
 
   @Override
   public OptionalDouble max() {
+    this.closeAndCheck();
     return OptionalDouble.empty();
   }
 
   @Override
   public long count() {
+    this.closeAndCheck();
     return 0L;
   }
 
   @Override
   public OptionalDouble average() {
+    this.closeAndCheck();
     return OptionalDouble.empty();
   }
 
   @Override
   public DoubleSummaryStatistics summaryStatistics() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closeAndCheck();
+    return new DoubleSummaryStatistics();
   }
 
   @Override
   public boolean anyMatch(DoublePredicate predicate) {
-    // TODO Auto-generated method stub
+    Objects.requireNonNull(predicate);
+    this.closeAndCheck();
     return false;
   }
 
   @Override
   public boolean allMatch(DoublePredicate predicate) {
-    // TODO Auto-generated method stub
-    return false;
+    Objects.requireNonNull(predicate);
+    this.closeAndCheck();
+    return true;
   }
 
   @Override
   public boolean noneMatch(DoublePredicate predicate) {
-    // TODO Auto-generated method stub
-    return false;
+    Objects.requireNonNull(predicate);
+    this.closeAndCheck();
+    return true;
   }
 
   @Override
   public OptionalDouble findFirst() {
+    this.closeAndCheck();
     return OptionalDouble.empty();
   }
 
   @Override
   public OptionalDouble findAny() {
+    this.closeAndCheck();
     return OptionalDouble.empty();
   }
 
   @Override
   public Stream<Double> boxed() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public DoubleStream sequential() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    if (this.parallel) {
+      return new EmptyDoubleStream(this.ordered, false, this.sorted, this::close);
+    } else {
+      return this;
+    }
   }
 
   @Override
   public DoubleStream parallel() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    if (this.parallel) {
+      return this;
+    } else {
+      return new EmptyDoubleStream(this.ordered, true, this.sorted, this::close);
+    }
   }
 
   @Override
   public OfDouble iterator() {
-    // TODO Auto-generated method stub
-    return null;
+    return EMPTY_ITERATOR;
   }
 
   @Override
   public java.util.Spliterator.OfDouble spliterator() {
-    // TODO Auto-generated method stub
-    return null;
+    if (this.sorted) {
+      return EMPTY_SPLITERATOR_SORTED;
+    } else {
+      if (this.ordered) {
+        return EMPTY_SPLITERATOR_ORDERD;
+      } else {
+        return EMPTY_SPLITERATOR_UNORDERD;
+      }
+    }
   }
 
   @Override
   public String toString() {
     return "double[0]";
+  }
+
+  static final class EmptyIterator extends EmptyPrimitiveIterator<Double, DoubleConsumer> implements OfDouble {
+
+    @Override
+    public double nextDouble() {
+      throw new NoSuchElementException();
+    }
+
+  }
+
+  static final class EmptySpliterator extends EmptyOfPrimitiveWithCharacteristics<Double, DoubleConsumer, Spliterator.OfDouble> implements Spliterator.OfDouble {
+
+    EmptySpliterator(int characteristics) {
+      super(characteristics);
+    }
+
+  }
+
+  static final class EmptySortedSpliterator extends EmptyOfPrimitiveSorted<Double, DoubleConsumer, Spliterator.OfDouble> implements Spliterator.OfDouble {
+
+    @Override
+    public int characteristics() {
+      return SIZED | NONNULL | IMMUTABLE | ORDERED | SORTED | SUBSIZED;
+    }
+
   }
 
 }

@@ -34,6 +34,7 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   private static final Spliterator.OfInt EMPTY_SPLITERATOR_UNORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
   private static final Spliterator.OfInt EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliterator();
   private static final EmptyIterator EMPTY_ITERATOR = new EmptyIterator();
+
   private static final int[] EMPTY = new int[0];
 
   EmptyIntStream() {

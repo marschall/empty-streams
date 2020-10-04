@@ -40,44 +40,27 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
   }
 
   @Override
-  public Iterator<T> iterator() {
-    return Collections.emptyIterator();
-  }
-
-  @Override
-  public Spliterator<T> spliterator() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Stream<T> sequential() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Stream<T> parallel() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
   public Stream<T> unordered() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    if (this.ordered) {
+      return new EmptyStream<>(false, this.parallel, this.sorted, this::close);
+    } else {
+      return this;
+    }
   }
 
   @Override
   public Stream<T> onClose(Runnable closeHandler) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(closeHandler);
+    this.closedCheck();
+    return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this.composeCloseHandler(closeHandler));
   }
 
   @Override
   public Stream<T> filter(Predicate<? super T> predicate) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(predicate);
+    this.closedCheck();
+    return this;
   }
 
   @Override
@@ -109,81 +92,101 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
   }
 
   @Override
-  public <R> Stream<R> flatMap(
-          Function<? super T, ? extends Stream<? extends R>> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+  public <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper) {
+    Objects.requireNonNull(mapper);
+    // ignore because empty
+    this.closedCheck();
+    return (Stream<R>) this;
   }
 
   @Override
-  public IntStream flatMapToInt(
-          Function<? super T, ? extends IntStream> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+  public IntStream flatMapToInt(Function<? super T, ? extends IntStream> mapper) {
+    // ignore because empty
+    this.closedCheck();
+    return new EmptyIntStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
-  public LongStream flatMapToLong(
-          Function<? super T, ? extends LongStream> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+  public LongStream flatMapToLong(Function<? super T, ? extends LongStream> mapper) {
+    // ignore because empty
+    this.closedCheck();
+    return new EmptyLongStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
-  public DoubleStream flatMapToDouble(
-          Function<? super T, ? extends DoubleStream> mapper) {
-    // TODO Auto-generated method stub
-    return null;
+  public DoubleStream flatMapToDouble(Function<? super T, ? extends DoubleStream> mapper) {
+    Objects.requireNonNull(mapper);
+    // ignore because empty
+    this.closedCheck();
+    return new EmptyDoubleStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public Stream<T> distinct() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public Stream<T> sorted() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closedCheck();
+    if (this.sorted) {
+      return this;
+    } else {
+      return new EmptyStream<>(this.ordered, this.parallel, true, this::close);
+    }
   }
 
   @Override
   public Stream<T> sorted(Comparator<? super T> comparator) {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO pass to spliterator
+    Objects.requireNonNull(comparator);
+    this.closedCheck();
+    if (this.sorted) {
+      return this;
+    } else {
+      return new EmptyStream<>(this.ordered, this.parallel, true, this::close);
+    }
   }
 
   @Override
   public Stream<T> peek(Consumer<? super T> action) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(action);
+    // ignore because empty
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public Stream<T> limit(long maxSize) {
-    // TODO Auto-generated method stub
-    return null;
+    if (maxSize < 0) {
+      throw new IllegalArgumentException();
+    }
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public Stream<T> skip(long n) {
-    // TODO Auto-generated method stub
-    return null;
+    if (n < 0) {
+      throw new IllegalArgumentException();
+    }
+    this.closedCheck();
+    return this;
   }
 
   @Override
   public void forEach(Consumer<? super T> action) {
     Objects.requireNonNull(action);
-    // TODO Auto-generated method stub
-
+    // ignore because empty
+    this.closeAndCheck();
   }
 
   @Override
   public void forEachOrdered(Consumer<? super T> action) {
     Objects.requireNonNull(action);
-    // TODO Auto-generated method stub
-
+    // ignore because empty
+    this.closeAndCheck();
   }
 
   @Override
@@ -201,28 +204,33 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
 
   @Override
   public T reduce(T identity, BinaryOperator<T> accumulator) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(accumulator);
+    this.closeAndCheck();
+    return identity;
   }
 
   @Override
   public Optional<T> reduce(BinaryOperator<T> accumulator) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(accumulator);
+    this.closeAndCheck();
+    return Optional.empty();
   }
 
   @Override
-  public <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator,
-          BinaryOperator<U> combiner) {
-    // TODO Auto-generated method stub
-    return null;
+  public <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner) {
+    Objects.requireNonNull(accumulator);
+    Objects.requireNonNull(combiner);
+    this.closeAndCheck();
+    return identity;
   }
 
   @Override
-  public <R> R collect(Supplier<R> supplier,
-          BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner) {
-    // TODO Auto-generated method stub
-    return null;
+  public <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner) {
+    Objects.requireNonNull(supplier);
+    Objects.requireNonNull(accumulator);
+    Objects.requireNonNull(combiner);
+    this.closeAndCheck();
+    return supplier.get();
   }
 
   @Override
@@ -233,47 +241,84 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
 
   @Override
   public Optional<T> min(Comparator<? super T> comparator) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(comparator);
+    this.closeAndCheck();
+    return Optional.empty();
   }
 
   @Override
   public Optional<T> max(Comparator<? super T> comparator) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(comparator);
+    this.closeAndCheck();
+    return Optional.empty();
   }
 
   @Override
   public long count() {
+    this.closeAndCheck();
     return 0L;
   }
 
   @Override
   public boolean anyMatch(Predicate<? super T> predicate) {
-    // TODO Auto-generated method stub
+    Objects.requireNonNull(predicate);
+    this.closeAndCheck();
     return false;
   }
 
   @Override
   public boolean allMatch(Predicate<? super T> predicate) {
-    // TODO Auto-generated method stub
-    return false;
+    Objects.requireNonNull(predicate);
+    this.closeAndCheck();
+    return true;
   }
 
   @Override
   public boolean noneMatch(Predicate<? super T> predicate) {
-    // TODO Auto-generated method stub
-    return false;
+    Objects.requireNonNull(predicate);
+    this.closeAndCheck();
+    return true;
   }
 
   @Override
   public Optional<T> findFirst() {
-    // TODO Auto-generated method stub
-    return null;
+    this.closeAndCheck();
+    return Optional.empty();
   }
 
   @Override
   public Optional<T> findAny() {
+    this.closeAndCheck();
+    return Optional.empty();
+  }
+
+  @Override
+  public Stream<T> sequential() {
+    this.closedCheck();
+    if (this.parallel) {
+      return new EmptyStream<>(this.ordered, false, this.sorted, this::close);
+    } else {
+      return this;
+    }
+  }
+
+  @Override
+  public Stream<T> parallel() {
+    this.closedCheck();
+    if (this.parallel) {
+      return this;
+    } else {
+      return new EmptyStream<>(this.ordered, true, this.sorted, this::close);
+    }
+  }
+
+  @Override
+  public Iterator<T> iterator() {
+    return Collections.emptyIterator();
+  }
+
+  @Override
+  public Spliterator<T> spliterator() {
     // TODO Auto-generated method stub
     return null;
   }
