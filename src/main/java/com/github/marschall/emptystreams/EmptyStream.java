@@ -31,12 +31,12 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
     super();
   }
 
-  EmptyStream(boolean ordered, boolean parallel, Runnable closeHandler) {
-    super(ordered, parallel, closeHandler);
+  EmptyStream(boolean ordered, boolean parallel, boolean sorted, Runnable closeHandler) {
+    super(ordered, parallel, sorted, closeHandler);
   }
 
-  EmptyStream(boolean ordered, boolean parallel) {
-    super(ordered, parallel);
+  EmptyStream(boolean ordered, boolean parallel, boolean sorted) {
+    super(ordered, parallel, sorted);
   }
 
   @Override
@@ -91,21 +91,21 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
   public IntStream mapToInt(ToIntFunction<? super T> mapper) {
     Objects.requireNonNull(mapper);
     this.closedCheck();
-    return new EmptyIntStream(this.ordered, this.parallel, this::close);
+    return new EmptyIntStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public LongStream mapToLong(ToLongFunction<? super T> mapper) {
     Objects.requireNonNull(mapper);
     this.closedCheck();
-    return new EmptyLongStream(this.ordered, this.parallel, this::close);
+    return new EmptyLongStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public DoubleStream mapToDouble(ToDoubleFunction<? super T> mapper) {
     Objects.requireNonNull(mapper);
     this.closedCheck();
-    return new EmptyDoubleStream(this.ordered, this.parallel, this::close);
+    return new EmptyDoubleStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override

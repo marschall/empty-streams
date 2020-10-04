@@ -1,11 +1,18 @@
 package com.github.marschall.emptystreams;
 
+import static java.util.Spliterator.IMMUTABLE;
+import static java.util.Spliterator.NONNULL;
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterator.SIZED;
+import static java.util.Spliterator.SUBSIZED;
+
 import java.util.IntSummaryStatistics;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.PrimitiveIterator.OfInt;
+import java.util.Spliterator;
 import java.util.function.BiConsumer;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntConsumer;
@@ -23,7 +30,9 @@ import java.util.stream.Stream;
 
 final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implements IntStream {
 
-  private static final EmptySpliterator EMPTY_SPLITERATOR = new EmptySpliterator();
+  private static final Spliterator.OfInt EMPTY_SPLITERATOR_ORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | ORDERED | SUBSIZED);
+  private static final Spliterator.OfInt EMPTY_SPLITERATOR_UNORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
+  private static final Spliterator.OfInt EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliterator();
   private static final EmptyIterator EMPTY_ITERATOR = new EmptyIterator();
   private static final int[] EMPTY = new int[0];
 
@@ -31,19 +40,19 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
     super();
   }
 
-  EmptyIntStream(boolean ordered, boolean parallel, Runnable closeHandler) {
-    super(ordered, parallel, closeHandler);
+  EmptyIntStream(boolean ordered, boolean parallel, boolean sorted, Runnable closeHandler) {
+    super(ordered, parallel, sorted, closeHandler);
   }
 
-  EmptyIntStream(boolean ordered, boolean parallel) {
-    super(ordered, parallel);
+  EmptyIntStream(boolean ordered, boolean parallel, boolean sorted) {
+    super(ordered, parallel, sorted);
   }
 
   @Override
   public IntStream unordered() {
     this.closedCheck();
     if (this.ordered) {
-      return new EmptyIntStream(false, this.parallel, this::close);
+      return new EmptyIntStream(false, this.parallel, this.sorted, this::close);
     } else {
       return this;
     }
@@ -52,7 +61,8 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   @Override
   public IntStream onClose(Runnable closeHandler) {
     Objects.requireNonNull(closeHandler);
-    return new EmptyIntStream(this.ordered, this.parallel, this.composeCloseHandler(closeHandler));
+    this.closedCheck();
+    return new EmptyIntStream(this.ordered, this.parallel, this.sorted, this.composeCloseHandler(closeHandler));
   }
 
   @Override
@@ -73,21 +83,21 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   public <U> Stream<U> mapToObj(IntFunction<? extends U> mapper) {
     Objects.requireNonNull(mapper);
     this.closedCheck();
-    return new EmptyStream<>(this.ordered, this.parallel, this::close);
+    return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public LongStream mapToLong(IntToLongFunction mapper) {
     Objects.requireNonNull(mapper);
     this.closedCheck();
-    return new EmptyLongStream(this.ordered, this.parallel, this::close);
+    return new EmptyLongStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public DoubleStream mapToDouble(IntToDoubleFunction mapper) {
     Objects.requireNonNull(mapper);
     this.closedCheck();
-    return new EmptyDoubleStream(this.ordered, this.parallel, this::close);
+    return new EmptyDoubleStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
@@ -107,8 +117,11 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   @Override
   public IntStream sorted() {
     this.closedCheck();
-    // FIXME
-    return this;
+    if (this.sorted) {
+      return this;
+    } else {
+      return new EmptyIntStream(this.ordered, this.parallel, true, this::close);
+    }
   }
 
   @Override
@@ -253,26 +266,26 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   @Override
   public LongStream asLongStream() {
     this.closedCheck();
-    return new EmptyLongStream(this.ordered, this.parallel, this::close);
+    return new EmptyLongStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public DoubleStream asDoubleStream() {
     this.closedCheck();
-    return new EmptyDoubleStream(this.ordered, this.parallel, this::close);
+    return new EmptyDoubleStream(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public Stream<Integer> boxed() {
     this.closedCheck();
-    return new EmptyStream<>(this.ordered, this.parallel, this::close);
+    return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
   }
 
   @Override
   public IntStream sequential() {
     this.closedCheck();
     if (this.parallel) {
-      return new EmptyIntStream(this.ordered, false, this::close);
+      return new EmptyIntStream(this.ordered, false, this.sorted, this::close);
     } else {
       return this;
     }
@@ -284,7 +297,7 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
     if (this.parallel) {
       return this;
     } else {
-      return new EmptyIntStream(this.ordered, true, this::close);
+      return new EmptyIntStream(this.ordered, true, this.sorted, this::close);
     }
   }
 
@@ -294,8 +307,16 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   }
 
   @Override
-  public java.util.Spliterator.OfInt spliterator() {
-    return EMPTY_SPLITERATOR;
+  public Spliterator.OfInt spliterator() {
+    if (this.sorted) {
+      return EMPTY_SPLITERATOR_SORTED;
+    } else {
+      if (this.ordered) {
+        return EMPTY_SPLITERATOR_ORDERD;
+      } else {
+        return EMPTY_SPLITERATOR_UNORDERD;
+      }
+    }
   }
 
   @Override
@@ -312,7 +333,15 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
 
   }
 
-  static final class EmptySpliterator extends EmptyOfPrimitive<Integer, IntConsumer, java.util.Spliterator.OfInt> implements java.util.Spliterator.OfInt {
+  static final class EmptySpliterator extends EmptyOfPrimitiveWithCharacteristics<Integer, IntConsumer, Spliterator.OfInt> implements Spliterator.OfInt {
+
+    EmptySpliterator(int characteristics) {
+      super(characteristics);
+    }
+
+  }
+
+  static final class EmptySortedSpliterator extends EmptyOfPrimitiveSorted<Integer, IntConsumer, Spliterator.OfInt> implements Spliterator.OfInt {
 
     @Override
     public int characteristics() {

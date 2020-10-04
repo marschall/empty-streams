@@ -28,12 +28,12 @@ final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements
     super();
   }
 
-  EmptyLongStream(boolean ordered, boolean parallel, Runnable closeHandler) {
-    super(ordered, parallel, closeHandler);
+  EmptyLongStream(boolean ordered, boolean parallel, boolean sorted, Runnable closeHandler) {
+    super(ordered, parallel, sorted, closeHandler);
   }
 
-  EmptyLongStream(boolean ordered, boolean parallel) {
-    super(ordered, parallel);
+  EmptyLongStream(boolean ordered, boolean parallel, boolean sorted) {
+    super(ordered, parallel, sorted);
   }
 
   @Override

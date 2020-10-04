@@ -27,12 +27,12 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
     super();
   }
 
-  EmptyDoubleStream(boolean ordered, boolean parallel, Runnable closeHandler) {
-    super(ordered, parallel, closeHandler);
+  EmptyDoubleStream(boolean ordered, boolean parallel, boolean sorted, Runnable closeHandler) {
+    super(ordered, parallel, sorted, closeHandler);
   }
 
-  EmptyDoubleStream(boolean ordered, boolean parallel) {
-    super(ordered, parallel);
+  EmptyDoubleStream(boolean ordered, boolean parallel, boolean sorted) {
+    super(ordered, parallel, sorted);
   }
 
   @Override

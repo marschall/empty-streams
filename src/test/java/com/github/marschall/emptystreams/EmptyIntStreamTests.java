@@ -309,8 +309,7 @@ class EmptyIntStreamTests {
     assertTrue(flag2.get());
 
     AtomicBoolean flag3 = new AtomicBoolean(false);
-    stream.onClose(() -> flag3.set(true));
-    assertFalse(flag3.get());
+    assertThrows(IllegalStateException.class, () -> stream.onClose(() -> flag3.set(true)));
   }
 
   @ParameterizedTest
