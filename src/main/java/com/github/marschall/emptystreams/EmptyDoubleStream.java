@@ -29,9 +29,9 @@ import java.util.stream.Stream;
 
 final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> implements DoubleStream {
 
-  private static final Spliterator.OfDouble EMPTY_SPLITERATOR_ORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | ORDERED | SUBSIZED);
-  private static final Spliterator.OfDouble EMPTY_SPLITERATOR_UNORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
-  private static final Spliterator.OfDouble EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliterator();
+  private static final Spliterator.OfDouble EMPTY_SPLITERATOR_ORDERD = new EmptySpliteratorOfDouble(SIZED | NONNULL | IMMUTABLE | ORDERED | SUBSIZED);
+  private static final Spliterator.OfDouble EMPTY_SPLITERATOR_UNORDERD = new EmptySpliteratorOfDouble(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
+  private static final Spliterator.OfDouble EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliteratorOfDouble();
   private static final EmptyIterator EMPTY_ITERATOR = new EmptyIterator();
 
   private static final double[] EMPTY = new double[0];
@@ -320,15 +320,15 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
 
   }
 
-  static final class EmptySpliterator extends EmptyOfPrimitiveWithCharacteristics<Double, DoubleConsumer, Spliterator.OfDouble> implements Spliterator.OfDouble {
+  static final class EmptySpliteratorOfDouble extends EmptyWithCharacteristicsOfPrimitive<Double, DoubleConsumer, Spliterator.OfDouble> implements Spliterator.OfDouble {
 
-    EmptySpliterator(int characteristics) {
+    EmptySpliteratorOfDouble(int characteristics) {
       super(characteristics);
     }
 
   }
 
-  static final class EmptySortedSpliterator extends EmptyOfPrimitiveSorted<Double, DoubleConsumer, Spliterator.OfDouble> implements Spliterator.OfDouble {
+  static final class EmptySortedSpliteratorOfDouble extends EmptySortedOfPrimitive<Double, DoubleConsumer, Spliterator.OfDouble> implements Spliterator.OfDouble {
 
     @Override
     public int characteristics() {

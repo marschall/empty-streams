@@ -1,5 +1,11 @@
 package com.github.marschall.emptystreams;
 
+import static java.util.Spliterator.IMMUTABLE;
+import static java.util.Spliterator.NONNULL;
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterator.SIZED;
+import static java.util.Spliterator.SUBSIZED;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -25,6 +31,12 @@ import java.util.stream.Stream;
 
 final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stream<T> {
 
+  @SuppressWarnings("rawtypes")
+  private static final Spliterator EMPTY_SPLITERATOR_ORDERD = new EmptySpliteratorWithCharacteristics(SIZED | NONNULL | IMMUTABLE | ORDERED | SUBSIZED);
+  @SuppressWarnings("rawtypes")
+  private static final Spliterator EMPTY_SPLITERATOR_UNORDERD = new EmptySpliteratorWithCharacteristics(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  private static final Spliterator EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliterator(null);
   private static final Object[] EMTPY = new Object[0];
 
   EmptyStream() {
@@ -235,8 +247,11 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
 
   @Override
   public <R, A> R collect(Collector<? super T, A, R> collector) {
-    // TODO Auto-generated method stub
-    return null;
+    Objects.requireNonNull(collector);
+    this.closeAndCheck();
+    Supplier<A> supplier = collector.supplier();
+    Function<A, R> finisher = collector.finisher();
+    return finisher.apply(supplier.get());
   }
 
   @Override
@@ -318,14 +333,58 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public Spliterator<T> spliterator() {
-    // TODO Auto-generated method stub
-    return null;
+    if (this.sorted) {
+      // TODO comparator
+      return EMPTY_SPLITERATOR_SORTED;
+    } else {
+      if (this.ordered) {
+        return EMPTY_SPLITERATOR_ORDERD;
+      } else {
+        return EMPTY_SPLITERATOR_UNORDERD;
+      }
+    }
   }
 
   @Override
   public String toString() {
     return "Object[0]";
+  }
+
+  static final class EmptySpliteratorWithCharacteristics<T> extends EmptySpliterator<T> {
+
+    private final int characteristics;
+
+    EmptySpliteratorWithCharacteristics(int characteristics) {
+      this.characteristics = characteristics;
+    }
+
+    @Override
+    public int characteristics() {
+      return this.characteristics;
+    }
+
+  }
+
+  static final class EmptySortedSpliterator<T> extends EmptySpliterator<T> {
+
+    private final Comparator<? super T> comparator;
+
+    EmptySortedSpliterator(Comparator<? super T> comparator) {
+      this.comparator = comparator;
+    }
+
+    @Override
+    public Comparator<? super T> getComparator() {
+      return this.comparator;
+    }
+
+    @Override
+    public int characteristics() {
+      return SIZED | NONNULL | IMMUTABLE | ORDERED | SORTED | SUBSIZED;
+    }
+
   }
 
 }

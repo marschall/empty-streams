@@ -30,9 +30,9 @@ import java.util.stream.Stream;
 
 final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements LongStream {
 
-  private static final Spliterator.OfLong EMPTY_SPLITERATOR_ORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | ORDERED | SUBSIZED);
-  private static final Spliterator.OfLong EMPTY_SPLITERATOR_UNORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
-  private static final Spliterator.OfLong EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliterator();
+  private static final Spliterator.OfLong EMPTY_SPLITERATOR_ORDERD = new EmptySpliteratorOfLong(SIZED | NONNULL | IMMUTABLE | ORDERED | SUBSIZED);
+  private static final Spliterator.OfLong EMPTY_SPLITERATOR_UNORDERD = new EmptySpliteratorOfLong(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
+  private static final Spliterator.OfLong EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliteratorOfLong();
   private static final EmptyIterator EMPTY_ITERATOR = new EmptyIterator();
 
   private static final long[] EMPTY = new long[0];
@@ -327,15 +327,15 @@ final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements
 
   }
 
-  static final class EmptySpliterator extends EmptyOfPrimitiveWithCharacteristics<Long, LongConsumer, Spliterator.OfLong> implements Spliterator.OfLong {
+  static final class EmptySpliteratorOfLong extends EmptyWithCharacteristicsOfPrimitive<Long, LongConsumer, Spliterator.OfLong> implements Spliterator.OfLong {
 
-    EmptySpliterator(int characteristics) {
+    EmptySpliteratorOfLong(int characteristics) {
       super(characteristics);
     }
 
   }
 
-  static final class EmptySortedSpliterator extends EmptyOfPrimitiveSorted<Long, LongConsumer, Spliterator.OfLong> implements Spliterator.OfLong {
+  static final class EmptySortedSpliteratorOfLong extends EmptySortedOfPrimitive<Long, LongConsumer, Spliterator.OfLong> implements Spliterator.OfLong {
 
     @Override
     public int characteristics() {

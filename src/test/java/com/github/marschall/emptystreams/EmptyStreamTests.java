@@ -1,5 +1,6 @@
 package com.github.marschall.emptystreams;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -183,6 +184,14 @@ class EmptyStreamTests {
     assertEquals(Collections.emptyList(), stream.collect(() -> new ArrayList<>(), (list, i) -> list.add(i), (a, b) -> a.addAll(b)));
 
     assertThrows(IllegalStateException.class, () -> stream.collect(() -> new ArrayList<>(), (list, i) -> list.add(i), (a, b) -> a.addAll(b)));
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void collectCollector(Stream<Object> stream) {
+    assertEquals(Collections.emptyList(), stream.collect(toList()));
+
+    assertThrows(IllegalStateException.class, () -> stream.collect(toList()));
   }
 
   @ParameterizedTest

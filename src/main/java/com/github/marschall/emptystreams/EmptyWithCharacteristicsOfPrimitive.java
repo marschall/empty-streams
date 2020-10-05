@@ -2,12 +2,11 @@ package com.github.marschall.emptystreams;
 
 import java.util.Spliterator.OfPrimitive;
 
-abstract class EmptyOfPrimitiveWithCharacteristics<T, T_CONS, T_SPLITR extends OfPrimitive<T, T_CONS, T_SPLITR>> extends EmptyOfPrimitive<T, T_CONS, T_SPLITR> {
+abstract class EmptyWithCharacteristicsOfPrimitive<T, T_CONS, T_SPLITR extends OfPrimitive<T, T_CONS, T_SPLITR>> extends EmptyOfPrimitive<T, T_CONS, T_SPLITR> {
 
   private final int characteristics;
 
-  EmptyOfPrimitiveWithCharacteristics(int characteristics) {
-    super();
+  EmptyWithCharacteristicsOfPrimitive(int characteristics) {
     this.characteristics = characteristics;
   }
 

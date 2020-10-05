@@ -30,10 +30,10 @@ import java.util.stream.Stream;
 
 final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implements IntStream {
 
-  private static final Spliterator.OfInt EMPTY_SPLITERATOR_ORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | ORDERED | SUBSIZED);
-  private static final Spliterator.OfInt EMPTY_SPLITERATOR_UNORDERD = new EmptySpliterator(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
-  private static final Spliterator.OfInt EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliterator();
-  private static final EmptyIterator EMPTY_ITERATOR = new EmptyIterator();
+  private static final Spliterator.OfInt EMPTY_SPLITERATOR_ORDERD = new EmptySpliteratorOfInt(SIZED | NONNULL | IMMUTABLE | ORDERED | SUBSIZED);
+  private static final Spliterator.OfInt EMPTY_SPLITERATOR_UNORDERD = new EmptySpliteratorOfInt(SIZED | NONNULL | IMMUTABLE | SUBSIZED);
+  private static final Spliterator.OfInt EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliteratorOfInt();
+  private static final EmptyIteratorOfInt EMPTY_ITERATOR = new EmptyIteratorOfInt();
 
   private static final int[] EMPTY = new int[0];
 
@@ -325,7 +325,7 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
     return "int[0]";
   }
 
-  static final class EmptyIterator extends EmptyPrimitiveIterator<Integer, IntConsumer> implements OfInt {
+  static final class EmptyIteratorOfInt extends EmptyPrimitiveIterator<Integer, IntConsumer> implements OfInt {
 
     @Override
     public int nextInt() {
@@ -334,15 +334,15 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
 
   }
 
-  static final class EmptySpliterator extends EmptyOfPrimitiveWithCharacteristics<Integer, IntConsumer, Spliterator.OfInt> implements Spliterator.OfInt {
+  static final class EmptySpliteratorOfInt extends EmptyWithCharacteristicsOfPrimitive<Integer, IntConsumer, Spliterator.OfInt> implements Spliterator.OfInt {
 
-    EmptySpliterator(int characteristics) {
+    EmptySpliteratorOfInt(int characteristics) {
       super(characteristics);
     }
 
   }
 
-  static final class EmptySortedSpliterator extends EmptyOfPrimitiveSorted<Integer, IntConsumer, Spliterator.OfInt> implements Spliterator.OfInt {
+  static final class EmptySortedSpliteratorOfInt extends EmptySortedOfPrimitive<Integer, IntConsumer, Spliterator.OfInt> implements Spliterator.OfInt {
 
     @Override
     public int characteristics() {
