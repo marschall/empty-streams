@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -231,9 +233,36 @@ class EmptyStreamTests {
     Spliterator<Object> spliterator = sorted.spliterator();
     assertTrue(spliterator.hasCharacteristics(Spliterator.SORTED));
     assertTrue(spliterator.hasCharacteristics(Spliterator.ORDERED));
+    assertNull(spliterator.getComparator());
     sorted.close();
 
     assertThrows(IllegalStateException.class, () -> stream.sorted());
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
+  void sortedComparator(Stream<Object> stream) {
+    Comparator<Object> comparator = Comparator.comparing(Object::hashCode);
+    Stream<Object> sorted = stream.sorted(comparator);
+    Spliterator<Object> spliterator = sorted.spliterator();
+
+    assertTrue(spliterator.hasCharacteristics(Spliterator.ORDERED));
+    if (spliterator.hasCharacteristics(Spliterator.SORTED)) {
+      // false for JDK
+      assertSame(comparator, spliterator.getComparator());
+    }
+    sorted.close();
+
+    assertThrows(IllegalStateException.class, () -> stream.sorted(comparator));
+  }
+
+  public static void main(String[] args) {
+    Stream<String> stream = Stream.of("a", "b");
+    Comparator<? super String> comparator = String::compareTo;
+    Stream<String> sorted = stream.sorted(comparator);
+    Spliterator<String> spliterator = sorted.spliterator();
+    System.out.println(spliterator.hasCharacteristics(Spliterator.SORTED));
+    System.out.println(spliterator.getComparator());
   }
 
   @ParameterizedTest

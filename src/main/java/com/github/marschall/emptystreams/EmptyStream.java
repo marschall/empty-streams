@@ -39,6 +39,8 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
   private static final Spliterator EMPTY_SPLITERATOR_SORTED = new EmptySortedSpliterator(null);
   private static final Object[] EMTPY = new Object[0];
 
+  private Comparator<? super T> comparator;
+
   EmptyStream() {
     super();
   }
@@ -131,14 +133,11 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
 
   @Override
   public Stream<T> sorted(Comparator<? super T> comparator) {
-    // TODO pass to spliterator
     Objects.requireNonNull(comparator);
     this.closedCheck();
-    if (this.sorted) {
-      return this;
-    } else {
-      return new EmptyStream<>(this.ordered, this.parallel, true, this::close);
-    }
+    this.sorted = true;
+    this.comparator = comparator;
+    return this;
   }
 
   @Override
@@ -296,8 +295,11 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
   @SuppressWarnings("unchecked")
   public Spliterator<T> spliterator() {
     if (this.sorted) {
-      // TODO comparator
-      return EMPTY_SPLITERATOR_SORTED;
+      if (this.comparator != null) {
+        return new EmptySortedSpliterator<>(this.comparator);
+      } else {
+        return EMPTY_SPLITERATOR_SORTED;
+      }
     } else {
       if (this.ordered) {
         return EMPTY_SPLITERATOR_ORDERD;
