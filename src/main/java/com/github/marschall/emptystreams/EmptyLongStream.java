@@ -45,10 +45,6 @@ final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements
     super(ordered, parallel, sorted, closeHandler);
   }
 
-  EmptyLongStream(boolean ordered, boolean parallel, boolean sorted) {
-    super(ordered, parallel, sorted);
-  }
-
   @Override
   public LongStream filter(LongPredicate predicate) {
     Objects.requireNonNull(predicate);

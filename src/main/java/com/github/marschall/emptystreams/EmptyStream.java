@@ -49,10 +49,6 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
     super(ordered, parallel, sorted, closeHandler);
   }
 
-  EmptyStream(boolean ordered, boolean parallel, boolean sorted) {
-    super(ordered, parallel, sorted);
-  }
-
   @Override
   public Stream<T> filter(Predicate<? super T> predicate) {
     Objects.requireNonNull(predicate);

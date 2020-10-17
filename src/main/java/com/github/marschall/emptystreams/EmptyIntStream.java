@@ -45,10 +45,6 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
     super(ordered, parallel, sorted, closeHandler);
   }
 
-  EmptyIntStream(boolean ordered, boolean parallel, boolean sorted) {
-    super(ordered, parallel, sorted);
-  }
-
   @Override
   public IntStream filter(IntPredicate predicate) {
     Objects.requireNonNull(predicate);

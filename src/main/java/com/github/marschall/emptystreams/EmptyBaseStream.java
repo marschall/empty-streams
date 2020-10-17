@@ -19,10 +19,6 @@ abstract class EmptyBaseStream<T, S extends BaseStream<T, S>> implements BaseStr
     this(true, false, false, null);
   }
 
-  EmptyBaseStream(boolean ordered, boolean parallel, boolean sorted) {
-    this(ordered, parallel, sorted, null);
-  }
-
   EmptyBaseStream(boolean ordered, boolean parallel, boolean sorted, Runnable closeHandler) {
     this.ordered = ordered;
     this.parallel = parallel;

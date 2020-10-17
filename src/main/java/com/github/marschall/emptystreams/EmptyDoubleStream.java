@@ -44,10 +44,6 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
     super(ordered, parallel, sorted, closeHandler);
   }
 
-  EmptyDoubleStream(boolean ordered, boolean parallel, boolean sorted) {
-    super(ordered, parallel, sorted);
-  }
-
   @Override
   public DoubleStream filter(DoublePredicate predicate) {
     Objects.requireNonNull(predicate);
