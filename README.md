@@ -8,4 +8,3 @@ Compared to `java.util.stream.Stream#empty()`, `java.util.stream.IntStream#empty
 Because streams are inherently stateful, they have a state which may be closed, a minimum of allocation can not be avoided.
 
 The behavior of these streams might slightly differ to the JDK streams when it comes to spliterator characteristics but should still be compliant the with API contract requirements outlined in the Javadoc.
-

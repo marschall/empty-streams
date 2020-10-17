@@ -125,8 +125,8 @@
           </execution>
         </executions>
         <configuration>
-          <name>com.github.marschall.empty-streams</name>
-          <exports>com.github.marschall.empty-streams</exports>
+          <name>com.github.marschall.emptystreams</name>
+          <exports>com.github.marschall.emptystreams</exports>
         </configuration>
       </plugin>
       <!-- fails with jigsqw
