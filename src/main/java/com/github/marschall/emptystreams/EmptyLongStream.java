@@ -50,23 +50,6 @@ final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements
   }
 
   @Override
-  public LongStream unordered() {
-    this.closedCheck();
-    if (this.ordered) {
-      return new EmptyLongStream(false, this.parallel, this.sorted, this::close);
-    } else {
-      return this;
-    }
-  }
-
-  @Override
-  public LongStream onClose(Runnable closeHandler) {
-    Objects.requireNonNull(closeHandler);
-    this.closedCheck();
-    return new EmptyLongStream(this.ordered, this.parallel, this.sorted, this.composeCloseHandler(closeHandler));
-  }
-
-  @Override
   public LongStream filter(LongPredicate predicate) {
     Objects.requireNonNull(predicate);
     this.closedCheck();
@@ -118,11 +101,8 @@ final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements
   @Override
   public LongStream sorted() {
     this.closedCheck();
-    if (this.sorted) {
-      return this;
-    } else {
-      return new EmptyLongStream(this.ordered, this.parallel, true, this::close);
-    }
+    this.sorted = true;
+    return this;
   }
 
   @Override
@@ -273,26 +253,6 @@ final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements
   public Stream<Long> boxed() {
     this.closedCheck();
     return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
-  }
-
-  @Override
-  public LongStream sequential() {
-    this.closedCheck();
-    if (this.parallel) {
-      return new EmptyLongStream(this.ordered, false, this.sorted, this::close);
-    } else {
-      return this;
-    }
-  }
-
-  @Override
-  public LongStream parallel() {
-    this.closedCheck();
-    if (this.parallel) {
-      return this;
-    } else {
-      return new EmptyLongStream(this.ordered, true, this.sorted, this::close);
-    }
   }
 
   @Override

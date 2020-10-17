@@ -49,23 +49,6 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
   }
 
   @Override
-  public DoubleStream unordered() {
-    this.closedCheck();
-    if (this.ordered) {
-      return new EmptyDoubleStream(false, this.parallel, this.sorted, this::close);
-    } else {
-      return this;
-    }
-  }
-
-  @Override
-  public DoubleStream onClose(Runnable closeHandler) {
-    Objects.requireNonNull(closeHandler);
-    this.closedCheck();
-    return new EmptyDoubleStream(this.ordered, this.parallel, this.sorted, this.composeCloseHandler(closeHandler));
-  }
-
-  @Override
   public DoubleStream filter(DoublePredicate predicate) {
     Objects.requireNonNull(predicate);
     this.closedCheck();
@@ -117,11 +100,8 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
   @Override
   public DoubleStream sorted() {
     this.closedCheck();
-    if (this.sorted) {
-      return this;
-    } else {
-      return new EmptyDoubleStream(this.ordered, this.parallel, true, this::close);
-    }
+    this.sorted = true;
+    return this;
   }
 
   @Override
@@ -266,26 +246,6 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
   public Stream<Double> boxed() {
     this.closedCheck();
     return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
-  }
-
-  @Override
-  public DoubleStream sequential() {
-    this.closedCheck();
-    if (this.parallel) {
-      return new EmptyDoubleStream(this.ordered, false, this.sorted, this::close);
-    } else {
-      return this;
-    }
-  }
-
-  @Override
-  public DoubleStream parallel() {
-    this.closedCheck();
-    if (this.parallel) {
-      return this;
-    } else {
-      return new EmptyDoubleStream(this.ordered, true, this.sorted, this::close);
-    }
   }
 
   @Override

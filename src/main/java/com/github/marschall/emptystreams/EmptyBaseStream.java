@@ -1,18 +1,19 @@
 package com.github.marschall.emptystreams;
 
+import java.util.Objects;
 import java.util.stream.BaseStream;
 
 abstract class EmptyBaseStream<T, S extends BaseStream<T, S>> implements BaseStream<T, S> {
 
   private boolean closed;
 
-  final boolean ordered;
+  boolean ordered;
 
-  final boolean parallel;
+  boolean parallel;
 
-  final boolean sorted;
+  boolean sorted;
 
-  private final Runnable closeHandler;
+  private Runnable closeHandler;
 
   EmptyBaseStream() {
     this(true, false, false, null);
@@ -34,15 +35,46 @@ abstract class EmptyBaseStream<T, S extends BaseStream<T, S>> implements BaseStr
     return this.parallel;
   }
 
-  Runnable composeCloseHandler(Runnable r) {
+  @Override
+  public S onClose(Runnable closeHandler) {
+    Objects.requireNonNull(closeHandler);
+    this.closedCheck();
+    this.addCloseHandler(closeHandler);
+    return (S) this;
+  }
+
+  @Override
+  public S sequential() {
+    this.closedCheck();
+    this.parallel = false;
+    return (S) this;
+  }
+
+  @Override
+  public S parallel() {
+    this.closedCheck();
+    this.parallel = true;
+    return (S) this;
+  }
+
+  @Override
+  public S unordered() {
+    this.closedCheck();
+    this.ordered = false;
+    return (S) this;
+  }
+
+
+  private void addCloseHandler(Runnable r) {
+    Objects.requireNonNull(r);
     if (this.closeHandler == null) {
-      return compose(r, this::close);
+      this.closeHandler = r;
     } else {
-      return compose(this.closeHandler, r);
+      this.closeHandler = compose(this.closeHandler, r);
     }
   }
 
-  static Runnable compose(Runnable first, Runnable second) {
+  private static Runnable compose(Runnable first, Runnable second) {
     return () -> {
       try {
         first.run();

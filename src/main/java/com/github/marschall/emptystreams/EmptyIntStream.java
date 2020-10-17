@@ -50,23 +50,6 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   }
 
   @Override
-  public IntStream unordered() {
-    this.closedCheck();
-    if (this.ordered) {
-      return new EmptyIntStream(false, this.parallel, this.sorted, this::close);
-    } else {
-      return this;
-    }
-  }
-
-  @Override
-  public IntStream onClose(Runnable closeHandler) {
-    Objects.requireNonNull(closeHandler);
-    this.closedCheck();
-    return new EmptyIntStream(this.ordered, this.parallel, this.sorted, this.composeCloseHandler(closeHandler));
-  }
-
-  @Override
   public IntStream filter(IntPredicate predicate) {
     Objects.requireNonNull(predicate);
     this.closedCheck();
@@ -118,11 +101,8 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   @Override
   public IntStream sorted() {
     this.closedCheck();
-    if (this.sorted) {
-      return this;
-    } else {
-      return new EmptyIntStream(this.ordered, this.parallel, true, this::close);
-    }
+    this.sorted = true;
+    return this;
   }
 
   @Override
@@ -280,26 +260,6 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
   public Stream<Integer> boxed() {
     this.closedCheck();
     return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
-  }
-
-  @Override
-  public IntStream sequential() {
-    this.closedCheck();
-    if (this.parallel) {
-      return new EmptyIntStream(this.ordered, false, this.sorted, this::close);
-    } else {
-      return this;
-    }
-  }
-
-  @Override
-  public IntStream parallel() {
-    this.closedCheck();
-    if (this.parallel) {
-      return this;
-    } else {
-      return new EmptyIntStream(this.ordered, true, this.sorted, this::close);
-    }
   }
 
   @Override
