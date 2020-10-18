@@ -282,6 +282,18 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
     return Optional.empty();
   }
 
+  public Stream<T> dropWhile​(Predicate<? super T> predicate) {
+    this.closedCheck();
+    Objects.requireNonNull(predicate);
+    return this;
+  }
+
+  public Stream<T> takeWhile​(Predicate<? super T> predicate) {
+    this.closedCheck();
+    Objects.requireNonNull(predicate);
+    return this;
+  }
+
   @Override
   public Iterator<T> iterator() {
     return Collections.emptyIterator();

@@ -258,6 +258,18 @@ final class EmptyIntStream extends EmptyBaseStream<Integer, IntStream> implement
     return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
   }
 
+  public IntStream dropWhile(IntPredicate predicate) {
+    this.closedCheck();
+    Objects.requireNonNull(predicate);
+    return this;
+  }
+
+  public IntStream takeWhile​(IntPredicate predicate) {
+    this.closedCheck();
+    Objects.requireNonNull(predicate);
+    return this;
+  }
+
   @Override
   public OfInt iterator() {
     return EMPTY_ITERATOR;

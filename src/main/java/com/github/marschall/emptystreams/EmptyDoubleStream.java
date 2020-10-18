@@ -244,6 +244,18 @@ final class EmptyDoubleStream extends EmptyBaseStream<Double, DoubleStream> impl
     return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
   }
 
+  public DoubleStream dropWhile(DoublePredicate predicate) {
+    this.closedCheck();
+    Objects.requireNonNull(predicate);
+    return this;
+  }
+
+  public DoubleStream takeWhile​(DoublePredicate predicate) {
+    this.closedCheck();
+    Objects.requireNonNull(predicate);
+    return this;
+  }
+
   @Override
   public OfDouble iterator() {
     return EMPTY_ITERATOR;

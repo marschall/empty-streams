@@ -251,6 +251,18 @@ final class EmptyLongStream extends EmptyBaseStream<Long, LongStream> implements
     return new EmptyStream<>(this.ordered, this.parallel, this.sorted, this::close);
   }
 
+  public LongStream dropWhile(LongPredicate predicate) {
+    this.closedCheck();
+    Objects.requireNonNull(predicate);
+    return this;
+  }
+
+  public LongStream takeWhile​(LongPredicate predicate) {
+    this.closedCheck();
+    Objects.requireNonNull(predicate);
+    return this;
+  }
+
   @Override
   public OfLong iterator() {
     return EMPTY_ITERATOR;
