@@ -15,9 +15,9 @@ public final class EmptyStreams {
   }
 
   /**
-   * Returns and empty {@link IntStream}.
-   * 
-   * @return an empty stream
+   * Returns a new empty {@link IntStream}.
+   *
+   * @return a new empty int stream
    * @see IntStream#empty()
    */
   public static IntStream emptyIntStream() {
@@ -25,9 +25,9 @@ public final class EmptyStreams {
   }
 
   /**
-   * Returns and empty {@link LongStream}.
-   * 
-   * @return an empty stream
+   * Returns a new empty {@link LongStream}.
+   *
+   * @return a new empty long stream
    * @see LongStream#empty()
    */
   public static LongStream emptyLongStream() {
@@ -35,9 +35,9 @@ public final class EmptyStreams {
   }
 
   /**
-   * Returns and empty {@link DoubleStream}.
-   * 
-   * @return an empty stream
+   * Returns a new empty {@link DoubleStream}.
+   *
+   * @return a new empty double stream
    * @see DoubleStream#empty()
    */
   public static DoubleStream emptyDoubleStream() {
@@ -45,9 +45,9 @@ public final class EmptyStreams {
   }
 
   /**
-   * Returns and empty {@link Stream}.
-   * 
-   * @return an empty stream
+   * Returns a new empty {@link Stream}.
+   *
+   * @return a new empty stream
    * @param <T> the type of the stream elements
    * @see Stream#empty()
    */

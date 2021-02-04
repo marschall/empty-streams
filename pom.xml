@@ -71,13 +71,6 @@
           <links>
             <link>http://docs.oracle.com/javase/8/docs/api/</link>
           </links>
-          <tags>
-            <tag>
-              <name>implNote</name>
-              <placement>a</placement>
-              <head>Implementation Note:</head>
-            </tag>
-          </tags>
         </configuration>
         <executions>
           <execution>
@@ -305,12 +298,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.openjdk.jol</groupId>
-      <artifactId>jol-core</artifactId>
-      <version>0.14</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 
