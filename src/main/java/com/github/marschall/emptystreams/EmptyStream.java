@@ -9,6 +9,7 @@ import static java.util.Spliterator.SUBSIZED;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Spliterator;
@@ -247,6 +248,12 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
   public long count() {
     this.closeAndCheck();
     return 0L;
+  }
+
+  public List<T> toList() {
+    this.closeAndCheck();
+    // List.of() would require JDK 11+
+    return Collections.emptyList();
   }
 
   @Override
