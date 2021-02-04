@@ -1,4 +1,4 @@
-Empty Streams
+Empty Streams [![Build Status](https://travis-ci.org/marschall/empty-streams.svg?branch=master)](https://travis-ci.org/marschall/empty-streams) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/empty-streams/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/empty-streams) [![Javadocs](https://www.javadoc.io/badge/com.github.marschall/empty-streams.svg)](https://www.javadoc.io/doc/com.github.marschall/empty-streams)
 =============
 
 Empty implementations of the Java `java.util.stream.Stream`, `java.util.stream.IntStream`, `java.util.stream.LongStream` and `java.util.stream.DoubleStream`
