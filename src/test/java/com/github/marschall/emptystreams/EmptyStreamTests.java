@@ -1,5 +1,6 @@
 package com.github.marschall.emptystreams;
 
+import static com.github.marschall.emptystreams.JdkCompatibility.isBuggyJdkStream;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -292,6 +294,7 @@ class EmptyStreamTests {
   @ParameterizedTest
   @MethodSource("emptyStreams")
   void onClose(Stream<Object> stream) {
+    assumeFalse(isBuggyJdkStream(stream));
     AtomicBoolean flag1 = new AtomicBoolean(false);
     AtomicBoolean flag2 = new AtomicBoolean(false);
 

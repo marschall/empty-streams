@@ -1,11 +1,13 @@
 package com.github.marschall.emptystreams;
 
+import static com.github.marschall.emptystreams.JdkCompatibility.isBuggyJdkStream;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -287,6 +289,7 @@ class EmptyLongStreamTests {
   @ParameterizedTest
   @MethodSource("emptyStreams")
   void onClose(LongStream stream) {
+    assumeFalse(isBuggyJdkStream(stream));
     AtomicBoolean flag1 = new AtomicBoolean(false);
     AtomicBoolean flag2 = new AtomicBoolean(false);
 
