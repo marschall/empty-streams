@@ -17,8 +17,11 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
 import java.util.function.Function;
+import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
+import java.util.function.LongConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
@@ -95,6 +98,7 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
 
   @Override
   public IntStream flatMapToInt(Function<? super T, ? extends IntStream> mapper) {
+    Objects.requireNonNull(mapper);
     // ignore because empty
     this.closedCheck();
     return new EmptyIntStream(this.ordered, this.parallel, this.sorted, this::close);
@@ -102,6 +106,7 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
 
   @Override
   public LongStream flatMapToLong(Function<? super T, ? extends LongStream> mapper) {
+    Objects.requireNonNull(mapper);
     // ignore because empty
     this.closedCheck();
     return new EmptyLongStream(this.ordered, this.parallel, this.sorted, this::close);
@@ -109,6 +114,34 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
 
   @Override
   public DoubleStream flatMapToDouble(Function<? super T, ? extends DoubleStream> mapper) {
+    Objects.requireNonNull(mapper);
+    // ignore because empty
+    this.closedCheck();
+    return new EmptyDoubleStream(this.ordered, this.parallel, this.sorted, this::close);
+  }
+
+  public <R> Stream<R> mapMulti(BiConsumer<? super T, ? super Consumer<R>> mapper) {
+    Objects.requireNonNull(mapper);
+    // ignore because empty
+    this.closedCheck();
+    return (Stream<R>) this;
+  }
+
+  public IntStream mapMultiToInt(BiConsumer<? super T, ? super IntConsumer> mapper) {
+    Objects.requireNonNull(mapper);
+    // ignore because empty
+    this.closedCheck();
+    return new EmptyIntStream(this.ordered, this.parallel, this.sorted, this::close);
+  }
+
+  public LongStream mapMultiToLong(BiConsumer<? super T, ? super LongConsumer> mapper) {
+    Objects.requireNonNull(mapper);
+    // ignore because empty
+    this.closedCheck();
+    return new EmptyLongStream(this.ordered, this.parallel, this.sorted, this::close);
+  }
+
+  public DoubleStream mapMultiToDouble(BiConsumer<? super T, ? super DoubleConsumer> mapper) {
     Objects.requireNonNull(mapper);
     // ignore because empty
     this.closedCheck();
