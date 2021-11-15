@@ -100,6 +100,12 @@ class EmptyStreamTests {
 
   @ParameterizedTest
   @MethodSource("emptyStreams")
+  void toArrayNull(Stream<Object> stream) {
+    assertThrows(NullPointerException.class, () -> stream.toArray(i -> null));
+  }
+
+  @ParameterizedTest
+  @MethodSource("emptyStreams")
   void skip(Stream<Object> stream) {
     assertArrayEquals(new Object[0], stream.skip(1L).skip(2L).toArray());
   }

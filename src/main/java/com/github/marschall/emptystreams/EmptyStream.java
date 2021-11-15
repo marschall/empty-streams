@@ -220,7 +220,7 @@ final class EmptyStream<T> extends EmptyBaseStream<T, Stream<T>> implements Stre
   public <A> A[] toArray(IntFunction<A[]> generator) {
     Objects.requireNonNull(generator);
     this.closeAndCheck();
-    return generator.apply(0);
+    return Objects.requireNonNull(generator.apply(0));
   }
 
   @Override
